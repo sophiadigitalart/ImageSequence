@@ -87,6 +87,9 @@
     <Filter Include="Blocks\Cinder-VDUI\src">
       <UniqueIdentifier>{8C8264ED-ACC7-48F9-A140-3C36A730AC13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{03e8c646-c91a-45c3-8d3f-6d4d94aa6854}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ImageSequenceApp.cpp">
@@ -372,5 +375,24 @@
     <ResourceCompile Include="Resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\live_params.json">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\session.json">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\uniforms.json">
+      <Filter>assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\assets\textures.xml">
+      <Filter>assets</Filter>
+    </Xml>
+    <Xml Include="..\assets\warps.xml">
+      <Filter>assets</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
