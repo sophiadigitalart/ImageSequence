@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<textures version="1.0">
+  <texture id="1" texturetype="imagesequence">
+    <details path="r" width="1280" height="720" topdown="0"/>
+  </texture>
+  <texture id="2" texturetype="imagesequence">
+    <details path="b" width="1280" height="720" topdown="0"/>
+  </texture>
+  <texture id="3" texturetype="imagesequence">
+    <details path="v" width="1280" height="720" topdown="0"/>
+  </texture>
+  <texture id="4" texturetype="imagesequence">
+    <details path="love" width="1280" height="720" topdown="0"/>
+  </texture>
+  <texture id="5" texturetype="imagesequence">
+    <details path="purple" width="1280" height="720" topdown="0"/>
+  </texture>
+  <texture id="6" texturetype="image">
+    <details path="0.jpg" width="640" height="480" topdown="0"/>
+  </texture>
+</textures>
+
