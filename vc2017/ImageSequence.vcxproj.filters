@@ -90,6 +90,9 @@
     <Filter Include="assets">
       <UniqueIdentifier>{03e8c646-c91a-45c3-8d3f-6d4d94aa6854}</UniqueIdentifier>
     </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{6e9f77d2-2571-402d-9b4f-5cc3e93ee255}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ImageSequenceApp.cpp">
@@ -393,6 +396,9 @@
     </Xml>
     <Xml Include="..\assets\warps.xml">
       <Filter>assets</Filter>
+    </Xml>
+    <Xml Include="build\Win32\Debug\VDImageSequence.xml">
+      <Filter>debug</Filter>
     </Xml>
   </ItemGroup>
 </Project>

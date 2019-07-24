@@ -212,6 +212,7 @@
   <ItemGroup>
     <Xml Include="..\assets\textures.xml" />
     <Xml Include="..\assets\warps.xml" />
+    <Xml Include="build\Win32\Debug\VDImageSequence.xml" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />

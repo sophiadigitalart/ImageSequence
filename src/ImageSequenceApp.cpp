@@ -95,7 +95,7 @@ ImageSequenceApp::ImageSequenceApp()
 	// windows
 	mIsShutDown = false;
 	mRenderWindowTimer = 0.0f;
-	//timeline().apply(&mRenderWindowTimer, 1.0f, 2.0f).finishFn([&] { positionRenderWindow(); });
+	timeline().apply(&mRenderWindowTimer, 1.0f, 2.0f).finishFn([&] { positionRenderWindow(); });
 	// warping
 	mSettings = getAssetPath("") / "warps.xml";
 	if (fs::exists(mSettings)) {
@@ -106,9 +106,9 @@ ImageSequenceApp::ImageSequenceApp()
 		// otherwise create a warp from scratch
 		mWarps.push_back(WarpPerspectiveBilinear::create());
 	}
-	// load test image
+	// load test image .loadTopDown()
 	try {
-		mImage = gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
+		mImage = gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
 
 		mSrcArea = mImage->getBounds();
 
@@ -149,6 +149,13 @@ void ImageSequenceApp::update()
 {
 	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
 	mVDSession->update();
+	mImage = mVDSession->getInputTexture(5);
+		//gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
+	// nothing mImage->setTopDown(false);
+	mSrcArea = mImage->getBounds();
+
+	// adjust the content size of the warps
+	Warp::setSize(mWarps, mImage->getSize());
 }
 void ImageSequenceApp::cleanup()
 {
@@ -263,6 +270,8 @@ void ImageSequenceApp::draw()
 	}
 	// Spout Send
 	mSpoutOut.sendViewport();
+	// imgui
+	if (!mVDSettings->mCursorVisible) return;
 	mVDUI->Run("UI", (int)getAverageFps());
 	if (mVDUI->isReady()) {
 	}
