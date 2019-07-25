@@ -38,7 +38,7 @@ public:
 	void update() override;
 	void draw() override;
 	void cleanup() override;
-	void setUIVisibility(bool visible);
+	void toggleCursorVisibility(bool visible);
 private:
 	// Settings
 	VDSettingsRef					mVDSettings;
@@ -84,8 +84,9 @@ ImageSequenceApp::ImageSequenceApp()
 	mVDSettings = VDSettings::create("ImageSequence");
 	// Session
 	mVDSession = VDSession::create(mVDSettings);
+	mVDSession->setMode(2); // blue
 	//mVDSettings->mCursorVisible = true;
-	setUIVisibility(mVDSettings->mCursorVisible);
+	toggleCursorVisibility(mVDSettings->mCursorVisible);
 	mVDSession->getWindowsResolution();
 
 	mouseGlobal = false;
@@ -130,7 +131,7 @@ void ImageSequenceApp::positionRenderWindow() {
 	setWindowPos(mVDSettings->mRenderX, mVDSettings->mRenderY);
 	setWindowSize(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight);
 }
-void ImageSequenceApp::setUIVisibility(bool visible)
+void ImageSequenceApp::toggleCursorVisibility(bool visible)
 {
 	if (visible)
 	{
@@ -141,6 +142,7 @@ void ImageSequenceApp::setUIVisibility(bool visible)
 		hideCursor();
 	}
 }
+
 void ImageSequenceApp::fileDrop(FileDropEvent event)
 {
 	mVDSession->fileDrop(event);
@@ -149,9 +151,9 @@ void ImageSequenceApp::update()
 {
 	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
 	mVDSession->update();
-	mImage = mVDSession->getInputTexture(5);
-		//gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
-	// nothing mImage->setTopDown(false);
+	mImage = mVDSession->getInputTexture(mVDSession->getMode());
+	//gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
+// nothing mImage->setTopDown(false);
 	mSrcArea = mImage->getBounds();
 
 	// adjust the content size of the warps
@@ -215,11 +217,12 @@ void ImageSequenceApp::keyDown(KeyEvent event)
 				// quit the application
 				quit();
 				break;
-			case KeyEvent::KEY_h:
-				// mouse cursor and ui visibility
+			case KeyEvent::KEY_c:
+				// mouse cursor
 				mVDSettings->mCursorVisible = !mVDSettings->mCursorVisible;
-				setUIVisibility(mVDSettings->mCursorVisible);
-				break;
+				toggleCursorVisibility(mVDSettings->mCursorVisible);
+				break;			
+
 			case KeyEvent::KEY_w:
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
@@ -260,8 +263,9 @@ void ImageSequenceApp::draw()
 	}
 
 	//gl::setMatricesWindow(toPixels(getWindowSize()),false);
-	//gl::setMatricesWindow(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, false);
-	gl::setMatricesWindow(1280, 720, false); // must match windowSize
+	//gl::setMatricesWindow(1280, 720, false); // must match windowSize
+	//gl::setMatricesWindow(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, false); // must match windowSize
+	gl::setMatricesWindow(mVDSession->getIntUniformValueByIndex(mVDSettings->IOUTW), mVDSession->getIntUniformValueByIndex(mVDSettings->IOUTH), false); // must match windowSize
 	//gl::draw(mVDSession->getMixTexture(), getWindowBounds());
 	if (mImage) {
 		for (auto &warp : mWarps) {
@@ -271,10 +275,12 @@ void ImageSequenceApp::draw()
 	// Spout Send
 	mSpoutOut.sendViewport();
 	// imgui
-	if (!mVDSettings->mCursorVisible) return;
-	mVDUI->Run("UI", (int)getAverageFps());
-	if (mVDUI->isReady()) {
+	if (mVDSession->showUI()) {
+		mVDUI->Run("UI", (int)getAverageFps());
+		if (mVDUI->isReady()) {
+		}
 	}
+
 	getWindow()->setTitle(mVDSettings->sFps + " fps ImageSequence");
 }
 
