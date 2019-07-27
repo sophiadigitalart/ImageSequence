@@ -51,14 +51,9 @@ private:
 	// handle resizing for imgui
 	void							resizeWindow();
 	// imgui
-	float							color[4];
-	float							backcolor[4];
-	int								playheadPositions[12];
-	int								speeds[12];
-
-	float							f = 0.0f;
+	/*float							f = 0.0f;
 	char							buf[64];
-	unsigned int					i, j;
+	unsigned int					i, j; */
 
 	bool							mouseGlobal;
 
