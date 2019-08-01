@@ -50,14 +50,6 @@ private:
 	VDUIRef							mVDUI;
 	// handle resizing for imgui
 	void							resizeWindow();
-	// imgui
-	/*float							f = 0.0f;
-	char							buf[64];
-	unsigned int					i, j; */
-
-	bool							mouseGlobal;
-
-	string							mError;
 	// fbo
 	bool							mIsShutDown;
 	Anim<float>						mRenderWindowTimer;
@@ -83,15 +75,14 @@ ImageSequenceApp::ImageSequenceApp()
 	//mVDSettings->mCursorVisible = true;
 	toggleCursorVisibility(mVDSettings->mCursorVisible);
 	mVDSession->getWindowsResolution();
-
-	mouseGlobal = false;
+	
 	mFadeInDelay = true;
 	// UI
 	mVDUI = VDUI::create(mVDSettings, mVDSession);
 	// windows
 	mIsShutDown = false;
 	mRenderWindowTimer = 0.0f;
-	timeline().apply(&mRenderWindowTimer, 1.0f, 2.0f).finishFn([&] { positionRenderWindow(); });
+	//timeline().apply(&mRenderWindowTimer, 1.0f, 2.0f).finishFn([&] { positionRenderWindow(); });
 	// warping
 	mSettings = getAssetPath("") / "warps.xml";
 	if (fs::exists(mSettings)) {
@@ -122,7 +113,8 @@ void ImageSequenceApp::resizeWindow()
 	Warp::handleResize(mWarps);
 }
 void ImageSequenceApp::positionRenderWindow() {
-	mVDSettings->mRenderPosXY = ivec2(mVDSettings->mRenderX, mVDSettings->mRenderY);//20141214 was 0
+	mVDSession->getWindowsResolution();
+	mVDSettings->mRenderPosXY = ivec2(mVDSettings->mRenderX, mVDSettings->mRenderY);
 	setWindowPos(mVDSettings->mRenderX, mVDSettings->mRenderY);
 	setWindowSize(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight);
 }
@@ -147,10 +139,7 @@ void ImageSequenceApp::update()
 	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
 	mVDSession->update();
 	mImage = mVDSession->getInputTexture(mVDSession->getMode());
-	//gl::Texture::create(loadImage(loadAsset("blue (2).jpg")), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
-// nothing mImage->setTopDown(false);
 	mSrcArea = mImage->getBounds();
-
 	// adjust the content size of the warps
 	Warp::setSize(mWarps, mImage->getSize());
 }
@@ -217,7 +206,10 @@ void ImageSequenceApp::keyDown(KeyEvent event)
 				mVDSettings->mCursorVisible = !mVDSettings->mCursorVisible;
 				toggleCursorVisibility(mVDSettings->mCursorVisible);
 				break;			
-
+			case KeyEvent::KEY_F11:
+				// windows position
+				positionRenderWindow();
+				break;
 			case KeyEvent::KEY_w:
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
