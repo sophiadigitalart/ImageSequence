@@ -211,6 +211,7 @@ xcopy /y "..\..\..\Cinder\blocks\Cinder-Spout\lib\SpoutPanel.exe" "$(OutDir)"</C
   <ItemGroup>
     <None Include="..\assets\live_params.json" />
     <None Include="..\assets\session.json" />
+    <None Include="..\assets\texture.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\assets\textures.xml" />

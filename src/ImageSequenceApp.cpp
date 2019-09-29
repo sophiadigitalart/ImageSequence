@@ -50,12 +50,17 @@ private:
 	VDUIRef							mVDUI;
 	// handle resizing for imgui
 	void							resizeWindow();
-	// fbo
 	bool							mIsShutDown;
 	Anim<float>						mRenderWindowTimer;
 	void							positionRenderWindow();
 	bool							mFadeInDelay;
 	SpoutOut 						mSpoutOut;
+	// fbo
+	void							renderToFbo();
+	gl::FboRef						mFbo;
+	//! shaders
+	gl::GlslProgRef					mGlsl;
+	bool							mUseShader;
 	// warping
 	fs::path						mSettings;
 	gl::TextureRef					mImage;
@@ -83,7 +88,19 @@ ImageSequenceApp::ImageSequenceApp()
 	mIsShutDown = false;
 	mRenderWindowTimer = 0.0f;
 	//timeline().apply(&mRenderWindowTimer, 1.0f, 2.0f).finishFn([&] { positionRenderWindow(); });
+	// fbo
+	gl::Fbo::Format format;
+	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
+	mFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, format.depthTexture());
+
+	// shader
+	mUseShader = false;
+	mGlsl = gl::GlslProg::create(gl::GlslProg::Format().vertex(loadAsset("passthrough.vs")).fragment(loadAsset("texture.glsl")));
+
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
 	// warping
+	mUseShader = false;
 	mSettings = getAssetPath("") / "warps.xml";
 	if (fs::exists(mSettings)) {
 		// load warp settings from file if one exists
@@ -134,15 +151,7 @@ void ImageSequenceApp::fileDrop(FileDropEvent event)
 {
 	mVDSession->fileDrop(event);
 }
-void ImageSequenceApp::update()
-{
-	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
-	mVDSession->update();
-	mImage = mVDSession->getInputTexture(mVDSession->getMode());
-	mSrcArea = mImage->getBounds();
-	// adjust the content size of the warps
-	Warp::setSize(mWarps, mImage->getSize());
-}
+
 void ImageSequenceApp::cleanup()
 {
 	if (!mIsShutDown)
@@ -214,6 +223,9 @@ void ImageSequenceApp::keyDown(KeyEvent event)
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
 				break;
+			case KeyEvent::KEY_s:
+				mUseShader = !mUseShader;
+				break;
 			case KeyEvent::KEY_a:
 				// toggle drawing a random region of the image
 				if (mSrcArea.getWidth() != mImage->getWidth() || mSrcArea.getHeight() != mImage->getHeight())
@@ -237,7 +249,49 @@ void ImageSequenceApp::keyUp(KeyEvent event)
 		}
 	}
 }
+void ImageSequenceApp::update()
+{
+	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
+	mVDSession->update();
+	mImage = mVDSession->getInputTexture(mVDSession->getMode());
+	mSrcArea = mImage->getBounds();
+	// render into our FBO
+	if (mUseShader) {
+		renderToFbo();
+	}
+	// adjust the content size of the warps
+	Warp::setSize(mWarps, mImage->getSize());
+}
+// Render into the FBO
+void ImageSequenceApp::renderToFbo()
+{
 
+		// this will restore the old framebuffer binding when we leave this function
+		// on non-OpenGL ES platforms, you can just call mFbo->unbindFramebuffer() at the end of the function
+		// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
+		gl::ScopedFramebuffer fbScp(mFbo);
+		// clear out the FBO with black
+		gl::clear(Color::black());
+
+		// setup the viewport to match the dimensions of the FBO
+		gl::ScopedViewport scpVp(ivec2(0), mFbo->getSize());
+
+		// render
+
+		// texture binding must be before ScopedGlslProg
+		mImage->bind(0);
+
+		gl::ScopedGlslProg prog(mGlsl);
+
+		mGlsl->uniform("iGlobalTime", (float)getElapsedSeconds());
+		mGlsl->uniform("iResolution", vec3(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, 1.0));
+		mGlsl->uniform("iChannel0", 0); // texture 0
+		mGlsl->uniform("iExposure", mVDSession->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
+		mGlsl->uniform("iChromatic", mVDSession->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
+
+		gl::drawSolidRect(getWindowBounds());
+
+}
 void ImageSequenceApp::draw()
 {
 	gl::clear(Color::black());
@@ -256,7 +310,12 @@ void ImageSequenceApp::draw()
 	//gl::draw(mVDSession->getMixTexture(), getWindowBounds());
 	if (mImage) {
 		for (auto &warp : mWarps) {
-			warp->draw(mImage, mSrcArea);
+			if (mUseShader) {
+				warp->draw(mFbo->getColorTexture());
+			}
+			else {
+				warp->draw(mImage, mSrcArea);
+			}
 		}
 	}
 	// Spout Send
