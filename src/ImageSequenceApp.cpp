@@ -74,7 +74,6 @@ ImageSequenceApp::ImageSequenceApp()
 {
 	// Settings
 	mVDSettings = VDSettings::create("ImageSequence");
-	mVDSettings->mRenderXY = vec2(1.0);
 	// Session
 	mVDSession = VDSession::create(mVDSettings);
 	mVDSession->setMode(2); // blue
@@ -283,12 +282,12 @@ void ImageSequenceApp::renderToFbo()
 		mImage->bind(0);
 
 		gl::ScopedGlslProg prog(mGlsl);
-		float w = (float)mImage->getWidth() / mVDSession->getFloatUniformValueByIndex(mVDSettings->IMOUSEX);
+		float w = (float)mImage->getWidth() * mVDSettings->mTexMult.x / (float)mVDSettings->mRenderWidth;// / mVDSession->getFloatUniformValueByIndex(mVDSettings->IMOUSEX);
 		float h = (float)mImage->getHeight() / (float)mVDSettings->mRenderHeight;
 		
 		mGlsl->uniform("iGlobalTime", (float)getElapsedSeconds());
 		mGlsl->uniform("iResolution", vec3(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, 1.0));
-		mGlsl->uniform("iChannelResolution", vec3(w, 1.0, 1.0));
+		mGlsl->uniform("iChannelResolution", vec3(w, h, 1.0));
 		mGlsl->uniform("iChannel0", 0); // texture 0
 		mGlsl->uniform("iRenderXY", mVDSettings->mRenderXY);
 		mGlsl->uniform("iExposure", mVDSession->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));

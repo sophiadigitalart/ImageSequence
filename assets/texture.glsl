@@ -13,10 +13,11 @@ vec4 chromatic( vec2 uv ) {
 }
 void main() {
 	vec2 uv = gl_FragCoord.xy / iResolution.xy;
-	vec4 t0 = texture(iChannel0, uv * iRenderXY.xy * iChannelResolution.xy);
+	//vec4 t0 = texture(iChannel0, (uv - iChannelResolution.xy) * iRenderXY.xy);//iChannelResolution.xy
+	vec4 t0 = texture(iChannel0, uv);
 	vec4 c = vec4(0.0);
 	
-	if (iChromatic > 0.0) { t0 = chromatic(uv) * t0; }
+	//if (iChromatic > 0.0) { t0 = chromatic(uv) * t0; }
 	c = t0;c *= iExposure;
    	gl_FragColor = c;
 }
