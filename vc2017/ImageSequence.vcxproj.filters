@@ -93,6 +93,9 @@
     <Filter Include="debug">
       <UniqueIdentifier>{6e9f77d2-2571-402d-9b4f-5cc3e93ee255}</UniqueIdentifier>
     </Filter>
+    <Filter Include="release">
+      <UniqueIdentifier>{09c8f92a-4263-4cd1-94fc-a374b50e3eff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ImageSequenceApp.cpp">
@@ -215,16 +218,10 @@
     <ClInclude Include="..\..\..\Cinder\blocks\OSC\src\cinder\osc\Osc.h">
       <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\LiveParam.h">
-      <Filter>Blocks\Cinder-VD\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\VDAnimation.h">
       <Filter>Blocks\Cinder-VD\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\VDFbo.h">
-      <Filter>Blocks\Cinder-VD\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\VDLog.h">
       <Filter>Blocks\Cinder-VD\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\VDRouter.h">
@@ -248,19 +245,10 @@
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\VDWebsocket.h">
       <Filter>Blocks\Cinder-VD\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Cinder\blocks\Cinder-VD\include\Watchdog.h">
-      <Filter>Blocks\Cinder-VD\include</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Cinder\blocks\Cinder-VD\src\LiveParam.cpp">
-      <Filter>Blocks\Cinder-VD\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-VD\src\VDAnimation.cpp">
       <Filter>Blocks\Cinder-VD\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-VD\src\VDFbo.cpp">
-      <Filter>Blocks\Cinder-VD\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Cinder\blocks\Cinder-VD\src\VDLog.cpp">
       <Filter>Blocks\Cinder-VD\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-VD\src\VDRouter.cpp">
@@ -399,6 +387,9 @@
     </Xml>
     <Xml Include="build\Win32\Debug\VDImageSequence.xml">
       <Filter>debug</Filter>
+    </Xml>
+    <Xml Include="build\Win32\Release\VDImageSequence.xml">
+      <Filter>release</Filter>
     </Xml>
   </ItemGroup>
 </Project>

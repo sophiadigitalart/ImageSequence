@@ -6,8 +6,6 @@
 #include "VDSettings.h"
 // Session
 #include "VDSession.h"
-// Log
-#include "VDLog.h"
 // Spout
 #include "CiSpoutOut.h"
 // warping
@@ -44,8 +42,7 @@ private:
 	VDSettingsRef					mVDSettings;
 	// Session
 	VDSessionRef					mVDSession;
-	// Log
-	VDLogRef						mVDLog;
+
 	// UI
 	VDUIRef							mVDUI;
 	// handle resizing for imgui
@@ -76,6 +73,7 @@ ImageSequenceApp::ImageSequenceApp()
 	mVDSettings = VDSettings::create("ImageSequence");
 	// Session
 	mVDSession = VDSession::create(mVDSettings);
+	mVDSession->setSpeed(0, 0.0f);
 	mVDSession->setMode(2); // blue
 	//mVDSettings->mCursorVisible = true;
 	toggleCursorVisibility(mVDSettings->mCursorVisible);
@@ -94,7 +92,6 @@ ImageSequenceApp::ImageSequenceApp()
 	mFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, format.depthTexture());
 
 	// shader
-	mUseShader = false;
 	mGlsl = gl::GlslProg::create(gl::GlslProg::Format().vertex(loadAsset("passthrough.vs")).fragment(loadAsset("texture.glsl")));
 
 	gl::enableDepthRead();
@@ -206,7 +203,7 @@ void ImageSequenceApp::keyDown(KeyEvent event)
 	if (!Warp::handleKeyDown(mWarps, event)) {
 		if (!mVDSession->handleKeyDown(event)) {
 			switch (event.getCode()) {
-			case KeyEvent::KEY_ESCAPE:
+			case KeyEvent::KEY_F12:
 				// quit the application
 				quit();
 				break;
